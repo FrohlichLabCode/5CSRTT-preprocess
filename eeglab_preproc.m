@@ -220,16 +220,16 @@ if doEventTimes == 1
     level = sessionMetaBehav.SessionType(1,6);
     [alignNames, delayNames, delayTypes, hitMissNames, optoNames] = getCSRTTInfo(level);
     alignNames = {'Init','Stim'};
-    for ialign = 1%:numel(alignNames)
+    for ialign = 1:numel(alignNames)
         alignName = alignNames{ialign};
         
         hitMissName = 'Cor';
         if level == '6'
             condNames = delayNames;
-            condID = [1,2,3];
+            condID = [1,2,3]; % don't include the last condition with all combined
         elseif level == '7'
             condNames = optoNames;
-            condID = [1,2,3,4,5];
+            condID = [1,2,3,4,5]; % don't include the last condition with all combined
         end
         numCond = numel(condID);
 
@@ -262,11 +262,22 @@ if doEventTimes == 1
                     evtTimes{numCond+1} = [evtTimes{numCond+1} sessionMetaBehav.(columnName)(ID)];
                     trialIDs{numCond+1} = [trialIDs{numCond+1} EEG.event(i).urevent]; 
                     epochIDs{numCond+1} = [epochIDs{numCond+1} EEG.event(i).epoch];
-
-                    twins{iCond} = [-8,5]; 
-                    twins{numCond+1} = [-8,5];
-                    baseTwins{iCond} = [-1.5, -0.5] - delayDuration;
-                    baseTwins{numCond+1} = [-1.5, -0.5] - delayDuration;
+                    
+                    if strcmp(alignName, 'Stim')
+                        twins{iCond} = [-8,5]; 
+                        twins{numCond+1} = [-8,5];
+                        baseTwins{iCond} = [-2,-0.5] - delayDuration;
+                        baseTwins{numCond+1} = [baseTwins{numCond+1}; [-2,-0.5] - delayDuration];
+                        delays{iCond} = delayDuration;
+                        delays{numCond+1} = [delays{numCond+1}; delayDuration]; 
+                    elseif strcmp(alignName, 'Init')
+                        twins{iCond} = [-2,10]; 
+                        twins{numCond+1} = [-2,10];                        
+                        baseTwins{iCond} = [-2,-0.5];
+                        baseTwins{numCond+1} = [baseTwins{numCond+1}; [-2,-0.5]];
+                        delays{iCond} = delayDuration;
+                        delays{numCond+1} = [delays{numCond+1}; delayDuration]; 
+                    end
                 end
             end
         save([rootPreprocessDir 'eventTimes_' alignName 'Cor.mat'], 'evtTimes','trialIDs','epochIDs','twins','baseTwins','condNames');
@@ -292,11 +303,21 @@ if doEventTimes == 1
                 trialIDs{numCond+1} = [trialIDs{numCond+1} EEG.event(i).urevent]; 
                 epochIDs{numCond+1} = [epochIDs{numCond+1} EEG.event(i).epoch];
 
-                twins{iCond} = [-8,5]; 
-                twins{numCond+1} = [-8,5];
-                baseTwins{iCond} = [baseTwins{iCond}; [-1.5, -0.5] - delayDuration];
-                baseTwins{numCond+1} = [];
-                delays{iCond} = [delays{iCond}; delayDuration];
+                if strcmp(alignName, 'Stim')
+                    twins{iCond} = [-8,5]; 
+                    twins{numCond+1} = [-8,5];
+                    baseTwins{iCond} = [baseTwins{iCond}; [-2, -0.5] - delayDuration];
+                    baseTwins{numCond+1} = [baseTwins{numCond+1}; [-2, -0.5] - delayDuration];
+                    delays{iCond} = [delays{iCond}; delayDuration]; 
+                    delays{numCond+1} = [delays{numCond+1}; delayDuration];
+                elseif strcmp(alignName, 'Init')
+                    twins{iCond} = [-2,10]; 
+                    twins{numCond+1} = [-2,10];
+                    baseTwins{iCond} = [baseTwins{iCond}; [-2,-0.5]];
+                    baseTwins{numCond+1} = [baseTwins{numCond+1}; [-2,-0.5]];
+                    delays{iCond} = [delays{iCond}; delayDuration]; 
+                    delays{numCond+1} = [delays{numCond+1}; delayDuration];
+                end
             end
         end
         save([rootPreprocessDir 'optoEventTimes_' alignName 'Cor.mat'], 'evtTimes','trialIDs','epochIDs','twins','baseTwins','delays','condNames');        
