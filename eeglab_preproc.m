@@ -36,7 +36,7 @@ regionNames = {'PFC', 'LPl', 'PPC', 'VC'};
 %addpath(genpath(CodeDir));
 
 animalCode = '0171';
-PreprocessDir = ['E:/FerretData/' animalCode '/Preprocessed_mix/'];
+PreprocessDir = ['E:/FerretData/' animalCode '/Preprocessed/'];
 AnalysisDir   = ['E:/FerretData/' animalCode '/Analyzed/'];
 fileInfo = dir([PreprocessDir animalCode '_Level*']); %AttentionTask6* detect files to load/convert  '_LateralVideo*'
 
@@ -219,7 +219,7 @@ if doEventTimes == 1
     EEG = pop_loadset([rootPreprocessDir 'lfp/lfp_' num2str(desiredFs) 'fdAer_StimCorD.set']);
     level = sessionMetaBehav.SessionType(1,6);
     [alignNames, delayNames, delayTypes, hitMissNames, optoNames] = getCSRTTInfo(level);
-    alignNames = {'Init','Stim'};
+    alignNames = {'Stim'}; %'Init',
     for ialign = 1:numel(alignNames)
         alignName = alignNames{ialign};
         
@@ -280,7 +280,7 @@ if doEventTimes == 1
                     end
                 end
             end
-        save([rootPreprocessDir 'eventTimes_' alignName 'Cor.mat'], 'evtTimes','trialIDs','epochIDs','twins','baseTwins','condNames');
+        save([rootPreprocessDir 'eventTimes_' alignName 'Cor.mat'], 'evtTimes','trialIDs','epochIDs','twins','baseTwins','delays','condNames');
     elseif level == '7'
         for i = 1:numel(EEG.event)
             name = EEG.event(i).type;
