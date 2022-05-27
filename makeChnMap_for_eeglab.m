@@ -13,9 +13,21 @@ coords.O16.x = [-250 -176.8 0 176.8 500 353.6 0 -353.6 -176.8 0 176.8 250 353.6 
 coords.O16.y = [0 176.8 250 176.8 0 -353.6 -500 -353.6 -176.8 -250 -176.8 0 353.6 500 353.6 0]/1000;
 coords.ID16  = [5 6 7 8 9 10 11 12 4 3 2 1 16 15 14 13];
 
-animalCode  = '0171';
+animalCode  = '0201';
 locs = table();
 switch animalCode
+    case '0201'
+        regionNames = {'PMC','CLA','PPC'}; % facing: PPAA, + for facing posterior
+        regionDistanceX  = [-1, -1, -0.3]; % +: right ear, 0:midline
+        regionDistanceY  = [1, 0, -0.5]; % +: nose
+        locs.channum = [1:48]';
+        locs.x = [coords.C16.x' + regionDistanceX(1);...
+             coords.O16.x' + regionDistanceX(2);...
+             coords.C16.x' + regionDistanceX(3)];
+        locs.y = [coords.C16.y' + regionDistanceY(1);...            
+             coords.O16.y' + regionDistanceY(2);...
+             coords.C16.y' + regionDistanceY(3)];
+        locs.z = ones(48,1)*0.95; % to be able to show up on the surface
     case '0171'
         regionNames = {'PFC','LPl','PPC','VC'}; % facing: PPAA, + for facing posterior
         regionDistanceX  = [-1, 0.6, -0.3, -0.3]; % +: right ear
@@ -45,8 +57,8 @@ save(['ChnMap_' animalCode],'locs','locsCell','coords');
 %writetable(locs,'ChnMap_0171.txt','Delimiter',' ');
 
 %% To plot channel location:
-% copy and paste locs content into ChnMap_0171.xyz (open as txt), don't
+% copy and paste variable "locs" content into ChnMap_0171.xyz (open as txt), don't
 % include title
-loc = readlocs('ChnMap_0171.xyz','filetype','xyz');
+loc = readlocs('ChnMap_0201.xyz','filetype','xyz');
 figure;topoplot([],loc); % without label
 figure;topoplot([],loc,'electrodes','ptslabels'); % with label
